@@ -90,19 +90,6 @@ docker compose --profile vector up -d     # 额外起 Milvus 栈
 docker compose --profile graph up -d      # 额外起 Neo4j
 ```
 
-## 相比原脚手架（ric-train）的优化
-
-| 项 | 原版 | 本版 |
-|----|------|------|
-| 任意 SQL | `POST /execute_sql` 跑任意 SQL（致命） | **已删除**，仅走 ORM/CRUD |
-| CORS | `allow_origins=["*"]` + credentials（非法） | 显式 `CORS_ORIGINS` |
-| 依赖 | 145 包大杂烩（含 Django/nibabel） | 核心 ~15 包 + `requirements-extras.txt` |
-| DB 层 | 同步 pymysql，无 ORM | 异步 SQLAlchemy 2.0 + Alembic |
-| 配置 | `extra="allow"`，secret 不校验 | `extra="ignore"`，启动时校验 secret |
-| 错误处理 | 原始 `f"err: {exc}"` 泄露 | 统一信封，prod 不泄露 |
-| 代码门禁 | 无 | ruff + pre-commit + CI |
-| 包命名 | 顶层 `Base` | 标准 `app` 包 |
-
 ## 生产化建议
 
 - 通过环境变量注入强随机 `JWT_SECRET`，生产环境关闭自动种用户

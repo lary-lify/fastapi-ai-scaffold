@@ -20,7 +20,7 @@
 ```
 fastapi-ai-scaffold/
 ├── main.py                 # 入口：日志 → CORS → 请求日志 → 异常处理器 → 路由 → lifespan
-├── app/
+├── Base/
 │   ├── config/             # setting.py（pydantic-settings, extra=ignore）· log.py（彩色+滚动日志）
 │   ├── db/                 # base.py（async engine/session/get_db/init_db）· models/user.py（User ORM）
 │   ├── schemas/            # user.py（Pydantic 出入参）

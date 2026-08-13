@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from app.config.setting import settings
+from Base.config.setting import settings
 
 
 class Neo4jClient:

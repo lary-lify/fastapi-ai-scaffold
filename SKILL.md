@@ -24,7 +24,7 @@ ORM + Alembic, validated JWT secret, lint gate).
 
 ```
 main.py                  FastAPI 入口：日志 → CORS(显式来源) → 请求日志 → 全局异常 → 路由 → 优雅停机
-app/
+Base/
   config/               setting.py（pydantic-settings, extra=ignore, JWT secret 校验）+ log.py（彩色+轮转日志）
   db/                   base.py（异步引擎/Session/get_db/init_db）+ models/user.py（User ORM）
   schemas/              user.py（Pydantic 入参/出参）

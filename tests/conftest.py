@@ -10,9 +10,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 
-from app.db.base import Base
-from app.db.models.user import User
-from app.security.password import hash_password
+from Base.db.base import Base
+from Base.db.models.user import User
+from Base.security.password import hash_password
 from main import app
 
 

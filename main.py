@@ -5,14 +5,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
-from app.common.exceptions import register_exception_handlers
-from app.config.log import setup_logging
-from app.config.setting import settings
-from app.db.base import SessionLocal, init_db
-from app.db.models.user import User
-from app.middleware.request_log import RequestLogMiddleware
-from app.routers import auth, health, users
-from app.security.password import hash_password
+from Base.common.exceptions import register_exception_handlers
+from Base.config.log import setup_logging
+from Base.config.setting import settings
+from Base.db.base import SessionLocal, init_db
+from Base.db.models.user import User
+from Base.middleware.request_log import RequestLogMiddleware
+from Base.routers import auth, health, users
+from Base.security.password import hash_password
 
 setup_logging()
 

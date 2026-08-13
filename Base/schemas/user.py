@@ -25,6 +25,7 @@ class UserOut(UserBase):
     id: int
     is_active: bool
     created_at: datetime
+    updated_at: datetime
 
 
 class LoginIn(BaseModel):

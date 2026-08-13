@@ -29,8 +29,14 @@ class ColoredFormatter(logging.Formatter):
     }
     RESET = "\033[0m"
 
+    def __init__(self, fmt: str | None = None, datefmt: str | None = None, use_color: bool = True):
+        super().__init__(fmt=fmt, datefmt=datefmt)
+        self.use_color = use_color
+
     def format(self, record: logging.LogRecord) -> str:
         msg = super().format(record)
+        if not self.use_color:
+            return msg
         color = self.COLORS.get(record.levelname)
         if color:
             return f"{color}{msg}{self.RESET}"

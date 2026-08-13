@@ -60,12 +60,12 @@ def main() -> int:
         shutil.copyfile(tpl, target / ".env")
 
     print(f"[OK] Project '{name}' created at {target} ({written} files)")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print(f"  cd {target}")
-    print(f"  cp .env.template .env   # then edit secrets")
-    print(f"  pip install -r requirements.txt")
-    print(f"  python main.py          # http://localhost:8000/docs")
-    print(f"  # or: docker compose up -d")
+    print("  cp .env.template .env   # then edit secrets")
+    print("  pip install -r requirements.txt")
+    print("  python main.py          # http://localhost:8000/docs")
+    print("  # or: docker compose up -d")
     return 0
 
 

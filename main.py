@@ -1,7 +1,3 @@
-from app.config.log import setup_logging
-
-setup_logging()
-
 import logging
 from contextlib import asynccontextmanager
 
@@ -10,12 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
 from app.common.exceptions import register_exception_handlers
+from app.config.log import setup_logging
 from app.config.setting import settings
 from app.db.base import SessionLocal, init_db
 from app.db.models.user import User
 from app.middleware.request_log import RequestLogMiddleware
 from app.routers import auth, health, users
 from app.security.password import hash_password
+
+setup_logging()
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,9 @@ class Neo4jClient:
         self._driver = Neo4jClient._driver
         self.database = cfg.database
 
-    def execute_query(self, cypher: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def execute_query(
+        self, cypher: str, params: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         with self._driver.session(database=self.database) as session:
             return [record.data() for record in session.run(cypher, params or {})]
 

@@ -42,7 +42,7 @@ def get_current_user(
     try:
         payload = decode_token(credentials.credentials)
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="令牌已过期")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="令牌已过期") from None
     except jwt.PyJWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="无效令牌")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="无效令牌") from None
     return {"sub": payload.get("sub"), "payload": payload}

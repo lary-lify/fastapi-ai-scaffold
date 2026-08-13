@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from app.config.setting import settings
 
@@ -47,7 +47,12 @@ class MilvusClient:
             self._collection = self._m["Collection"](name, using=self.alias)
         return self._collection
 
-    def insert(self, data: List[List[Any]], name: Optional[str] = None, partition_name: Optional[str] = None):
+    def insert(
+        self,
+        data: List[List[Any]],
+        name: Optional[str] = None,
+        partition_name: Optional[str] = None,
+    ):
         return self.get_collection(name).insert(data, partition_name=partition_name)
 
     def search(

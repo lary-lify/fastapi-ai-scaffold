@@ -1,7 +1,7 @@
+import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import pool
 
 from app.db.base import Base, engine
 from app.db.models import user  # noqa: F401  (register models on Base.metadata)
@@ -42,8 +42,6 @@ async def run_migrations_online() -> None:
         await connection.run_sync(do_run_migrations)
     await engine.dispose()
 
-
-import asyncio
 
 if context.is_offline_mode():
     run_migrations_offline()

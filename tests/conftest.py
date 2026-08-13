@@ -6,11 +6,14 @@ os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test.db")
 os.environ.setdefault("JWT_SECRET", "test-secret-for-ci")
 os.environ.setdefault("APP_ENV", "test")
 
+import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 
 from app.db.base import Base
 from app.db.models.user import User
 from app.security.password import hash_password
+from main import app
 
 
 def _bootstrap() -> None:
@@ -18,18 +21,26 @@ def _bootstrap() -> None:
     Base.metadata.drop_all(sync_engine)
     Base.metadata.create_all(sync_engine)
     with sync_engine.begin() as conn:
+        # Seed the same demo admin that main.py guarantees on startup, so the
+        # /auth/login happy path is exercised regardless of seeding order.
         exists = conn.execute(
-            select(User).where(User.username == "tester")
+            select(User).where(User.username == "admin")
         ).first()
         if not exists:
             conn.execute(
                 User.__table__.insert().values(
-                    username="tester",
-                    email="tester@example.com",
-                    hashed_password=hash_password("tester123"),
+                    username="admin",
+                    email="admin@example.com",
+                    hashed_password=hash_password("admin123"),
                     is_active=True,
                 )
             )
 
 
 _bootstrap()
+
+
+@pytest.fixture
+def client():
+    with TestClient(app) as c:
+        yield c

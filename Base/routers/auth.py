@@ -1,14 +1,35 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 
-from Base.common.response import success_response
+from Base.common.response import error_response, success_response
 from Base.db.base import get_db
 from Base.db.models.user import User
-from Base.schemas.user import LoginIn, TokenOut, UserOut
+from Base.schemas.user import LoginIn, TokenOut, UserOut, UserRegister
 from Base.security.jwt import create_access_token, get_current_user
 from Base.security.password import verify_password
+from Base.services.user_service import UserService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/register")
+async def register(body: UserRegister, db=Depends(get_db)):
+    """Public self-registration.
+
+    Field validation (username pattern, email format, password length, password
+    != username) is enforced by :class:`UserRegister`; uniqueness of username /
+    email is checked in the service layer. Returns ``409`` when the account
+    already exists.
+    """
+    svc = UserService(db)
+    user = await svc.register(
+        username=body.username, email=body.email, password=body.password
+    )
+    if user is None:
+        return error_response("用户名或邮箱已存在", code=409)
+    return success_response(
+        data=UserOut.model_validate(user).model_dump(), message="注册成功"
+    )
 
 
 @router.post("/login", response_model=TokenOut)

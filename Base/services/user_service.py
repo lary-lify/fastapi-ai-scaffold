@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from Base.db.models.user import User
 from Base.repositories.user_repository import UserRepository
 from Base.security.password import hash_password
@@ -33,6 +35,29 @@ class UserService(BaseService):
             hashed_password=hash_password(password),
             is_active=True,
         )
+
+    async def register(self, *, username: str, email: str, password: str) -> User | None:
+        """Public self-registration.
+
+        Validates uniqueness via :meth:`UserRepository.exists` and returns
+        ``None`` when the username or email is already taken.
+        """
+        if await self.repo.exists(username=username) or await self.repo.exists(
+            email=email
+        ):
+            return None
+        return await self.repo.create(
+            username=username,
+            email=email,
+            hashed_password=hash_password(password),
+            is_active=True,
+        )
+
+    async def paginate(
+        self, *, page: int = 1, page_size: int = 20
+    ) -> tuple[list[User], int]:
+        """Return a paginated ``(users, total)`` slice delegated to the repo."""
+        return await self.repo.paginate(page=page, page_size=page_size)
 
     async def update(self, user: User, **kwargs) -> User:
         """Update a user. Supports a plaintext ``password`` kwarg."""

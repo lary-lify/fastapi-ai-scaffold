@@ -7,6 +7,18 @@ from Base.common.response import error_response
 from Base.config.setting import settings
 
 
+def _json_safe(obj):
+    """Recursively convert objects (e.g. exceptions inside pydantic error
+    contexts) into JSON-serialisable primitives."""
+    if isinstance(obj, dict):
+        return {k: _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_json_safe(v) for v in obj]
+    if isinstance(obj, Exception):
+        return str(obj)
+    return obj
+
+
 class BusinessError(Exception):
     """Domain error carrying a code + message, rendered as a unified response."""
 
@@ -25,7 +37,9 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def _validation_error_handler(request: Request, exc: RequestValidationError):
         return JSONResponse(
             status_code=422,
-            content=error_response("请求参数校验失败", code=422, data=exc.errors()),
+            content=error_response(
+                "请求参数校验失败", code=422, data=_json_safe(exc.errors())
+            ),
         )
 
     @app.exception_handler(StarletteHTTPException)

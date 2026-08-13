@@ -23,3 +23,40 @@ def test_me_with_token(client):
     r = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json()["data"]["username"] == "admin"
+
+
+def test_register_success(client):
+    r = client.post(
+        "/auth/register",
+        json={"username": "newbie", "email": "newbie@example.com", "password": "secret1"},
+    )
+    assert r.status_code == 200
+    assert r.json()["data"]["username"] == "newbie"
+    assert r.json()["data"]["email"] == "newbie@example.com"
+
+
+def test_register_duplicate(client):
+    client.post(
+        "/auth/register",
+        json={"username": "dupuser", "email": "dup@example.com", "password": "secret1"},
+    )
+    r2 = client.post(
+        "/auth/register",
+        json={"username": "dupuser", "email": "dup2@example.com", "password": "secret1"},
+    )
+    assert r2.json()["code"] == 409
+
+
+def test_register_validation_error(client):
+    # password equal to username is rejected by the cross-field validator
+    r = client.post(
+        "/auth/register",
+        json={"username": "shortp", "email": "short@example.com", "password": "shortp"},
+    )
+    assert r.status_code == 422
+    # invalid username characters
+    r2 = client.post(
+        "/auth/register",
+        json={"username": "bad name", "email": "bad@example.com", "password": "secret1"},
+    )
+    assert r2.status_code == 422

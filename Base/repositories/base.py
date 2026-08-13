@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Generic, Type, TypeVar
 
 from sqlalchemy import func, select
@@ -59,3 +61,34 @@ class BaseRepository(Generic[ModelType]):
             stmt = stmt.where(getattr(self.model, field) == value)
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
+
+    async def exists(self, **filters: Any) -> bool:
+        """Return ``True`` when at least one row matches the given filters."""
+        stmt = select(self.model)
+        for field, value in filters.items():
+            stmt = stmt.where(getattr(self.model, field) == value)
+        result = await self.session.execute(stmt.limit(1))
+        return result.first() is not None
+
+    async def paginate(
+        self, *, page: int = 1, page_size: int = 20, **filters: Any
+    ) -> tuple[list[ModelType], int]:
+        """Return a ``(items, total)`` tuple for the given page.
+
+        ``page`` is 1-based and clamped to ``>= 1``; ``page_size`` is clamped to
+        ``>= 1`` as well. Results are ordered by the model primary key when one
+        exists, so pagination stays stable across requests.
+        """
+        page = max(1, page)
+        page_size = max(1, page_size)
+
+        stmt = select(self.model)
+        for field, value in filters.items():
+            stmt = stmt.where(getattr(self.model, field) == value)
+        if hasattr(self.model, "id"):
+            stmt = stmt.order_by(self.model.id)
+
+        total = await self.count(**filters)
+        stmt = stmt.offset((page - 1) * page_size).limit(page_size)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all()), total

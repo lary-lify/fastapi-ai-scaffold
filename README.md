@@ -8,7 +8,8 @@
 
 - **异步优先**：FastAPI + 异步 SQLAlchemy 2.0（`AsyncSession` / `async_sessionmaker`），`DATABASE_URL` 一行切换 SQLite / MySQL
 - **数据库迁移**：内置 Alembic，初始迁移含 `users` 表
-- **JWT 认证**：`/auth/login`、`/auth/me`，bcrypt 密码哈希；`JWT_SECRET` 启动时校验（占位值直接拒绝 prod 启动）
+- **JWT 认证**：`/auth/register`（公开注册，带字段+业务校验）、`/auth/login`、`/auth/me`，bcrypt 密码哈希；`JWT_SECRET` 启动时校验（占位值直接拒绝 prod 启动）
+- **分页**：`GET /users/page` 返回 `PageSchema{total,page,page_size,items}` 统一分页信封
 - **统一响应 / 异常处理**：`ApiResponse{code,message,data}`；业务异常 / 校验 / HTTP 错误统一信封；生产环境不泄露内部错误
 - **CORS 正确姿势**：显式 `CORS_ORIGINS` 列表，绝不 `*` + credentials
 - **结构化日志**：彩色控制台 + 按天滚动文件，`X-Request-ID` 请求中间件

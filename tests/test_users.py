@@ -51,3 +51,25 @@ def test_update_and_delete(client):
 
 def test_requires_auth(client):
     assert client.get("/users").status_code == 401
+
+
+def test_page_users(client):
+    h = _headers(client)
+    client.post(
+        "/users",
+        json={"username": "page1", "email": "page1@example.com", "password": "secret1"},
+        headers=h,
+    )
+    client.post(
+        "/users",
+        json={"username": "page2", "email": "page2@example.com", "password": "secret1"},
+        headers=h,
+    )
+    r = client.get("/users/page?page=1&page_size=1", headers=h)
+    assert r.status_code == 200
+    body = r.json()["data"]
+    assert body["page"] == 1
+    assert body["page_size"] == 1
+    assert body["total"] >= 3  # admin + 2 created
+    assert len(body["items"]) == 1
+    assert all("id" in u and "email" in u for u in body["items"])

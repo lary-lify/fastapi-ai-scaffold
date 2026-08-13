@@ -1,0 +1,7 @@
+# Optional dependencies for the vector / graph / LLM stacks.
+# Install alongside requirements.txt only when you actually use these clients.
+pymilvus>=2.4
+neo4j>=5.20
+minio>=7.2
+langchain>=0.3
+openai>=1.40

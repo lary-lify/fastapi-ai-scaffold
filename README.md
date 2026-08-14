@@ -32,7 +32,7 @@ fastapi-ai-scaffold/
 │   ├── middleware/         # request_log.py（X-Request-ID + 耗时）
 │   └── routers/            # health.py · auth.py · users.py（DB CRUD，受保护）
 ├── clients/                # redis_client.py · milvus_client.py · neo4j_client.py（懒加载）
-├── migrations/             # Alembic env + 0001_initial（users）
+├── migrations/             # Alembic env + 0001(users)/0002(updated_at)/0003(email verification)
 ├── tests/                  # conftest + health/auth/users（pytest，sqlite）
 ├── scripts/                # scaffold.py（生成新项目）
 ├── requirements.txt        # 核心依赖（~15 包）

@@ -15,7 +15,9 @@ def test_create_and_list(client):
     assert r.status_code == 200
     uid = r.json()["data"]["id"]
     listing = client.get("/users", headers=h)
-    assert any(u["id"] == uid for u in listing.json()["data"])
+    body = listing.json()["data"]
+    assert "items" in body
+    assert any(u["id"] == uid for u in body["items"])
 
 
 def test_create_duplicate(client):
@@ -65,7 +67,7 @@ def test_page_users(client):
         json={"username": "page2", "email": "page2@example.com", "password": "secret1"},
         headers=h,
     )
-    r = client.get("/users/page?page=1&page_size=1", headers=h)
+    r = client.get("/users?page=1&page_size=1", headers=h)
     assert r.status_code == 200
     body = r.json()["data"]
     assert body["page"] == 1

@@ -32,6 +32,7 @@ class AppSettings(BaseEnvSettings):
     name: str = Field("fastapi-ai-scaffold", alias="APP_NAME")
     env: str = Field("dev", alias="APP_ENV")  # dev | prod
     log_level: str = Field("INFO", alias="LOG_LEVEL")
+    base_url: str = Field("http://localhost:8000", alias="APP_BASE_URL")
     cors_origins: List[str] = Field(
         ["http://localhost:3000", "http://localhost:8000"],
         alias="CORS_ORIGINS",
@@ -85,11 +86,23 @@ class Neo4jSettings(BaseEnvSettings):
     database: str = Field("neo4j", alias="NEO4J_DATABASE")
 
 
+class EmailSettings(BaseEnvSettings):
+    # console (default, prints to stdout) | smtp
+    backend: str = Field("console", alias="EMAIL_BACKEND")
+    smtp_host: str = Field("localhost", alias="SMTP_HOST")
+    smtp_port: int = Field(587, alias="SMTP_PORT")
+    smtp_user: Optional[str] = Field(None, alias="SMTP_USER")
+    smtp_password: Optional[str] = Field(None, alias="SMTP_PASSWORD")
+    from_addr: str = Field("no-reply@example.com", alias="EMAIL_FROM")
+    token_expire_hours: int = Field(24, alias="EMAIL_VERIFY_EXPIRE_HOURS")
+
+
 class AuthSettings(BaseEnvSettings):
     jwt_secret: str = Field("change-me-in-production", alias="JWT_SECRET")
     jwt_algorithm: str = Field("HS256", alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = Field(30, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
     refresh_token_expire_days: int = Field(7, alias="REFRESH_TOKEN_EXPIRE_DAYS")
+    require_email_verification: bool = Field(True, alias="REQUIRE_EMAIL_VERIFICATION")
 
     @model_validator(mode="after")
     def _require_secret(self):
@@ -104,6 +117,7 @@ class Settings(BaseEnvSettings):
     redis: RedisSettings = Field(default_factory=RedisSettings)
     milvus: MilvusSettings = Field(default_factory=MilvusSettings)
     neo4j: Neo4jSettings = Field(default_factory=Neo4jSettings)
+    email: EmailSettings = Field(default_factory=EmailSettings)
     auth: AuthSettings = Field(default_factory=AuthSettings)
 
     model_config = SettingsConfigDict(

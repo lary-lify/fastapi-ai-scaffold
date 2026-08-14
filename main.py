@@ -32,6 +32,7 @@ async def _seed_demo_user() -> None:
                     username=DEMO_USERNAME,
                     email="admin@example.com",
                     hashed_password=hash_password(DEMO_PASSWORD),
+                    is_verified=True,
                 )
             )
             await db.commit()

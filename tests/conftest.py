@@ -33,6 +33,7 @@ def _bootstrap() -> None:
                     email="admin@example.com",
                     hashed_password=hash_password("admin123"),
                     is_active=True,
+                    is_verified=True,
                 )
             )
 

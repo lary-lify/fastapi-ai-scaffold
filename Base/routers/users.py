@@ -11,22 +11,13 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("")
-async def list_users(_: dict = Depends(get_current_user), db=Depends(get_db)):
-    svc = UserService(db)
-    users = await svc.list()
-    return success_response(
-        data=[UserOut.model_validate(u).model_dump() for u in users]
-    )
-
-
-@router.get("/page")
-async def page_users(
+async def list_users(
     page: int = Query(1, ge=1, description="页码，从 1 开始"),
     page_size: int = Query(20, ge=1, le=100, description="每页条数"),
     _: dict = Depends(get_current_user),
     db=Depends(get_db),
 ):
-    """Paginated user list wrapped in :class:`PageSchema`."""
+    """Paginated user list wrapped in :class:`PageSchema` (unified return shape)."""
     svc = UserService(db)
     items, total = await svc.paginate(page=page, page_size=page_size)
     payload = PageSchema[UserOut](

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 
 from Base.common.response import error_response, success_response
+from Base.config.setting import settings
 from Base.db.base import get_db
 from Base.db.models.user import User
 from Base.schemas.user import LoginIn, TokenOut, UserOut, UserRegister
@@ -28,7 +29,22 @@ async def register(body: UserRegister, db=Depends(get_db)):
     if user is None:
         return error_response("用户名或邮箱已存在", code=409)
     return success_response(
-        data=UserOut.model_validate(user).model_dump(), message="注册成功"
+        data=UserOut.model_validate(user).model_dump(), message="注册成功，验证邮件已发送"
+    )
+
+
+@router.get("/verify-email")
+async def verify_email(
+    token: str = Query(..., min_length=1, description="邮箱验证令牌"),
+    db=Depends(get_db),
+):
+    """Activate an account from the link emailed after registration."""
+    svc = UserService(db)
+    user = await svc.verify_email(token)
+    if user is None:
+        return error_response("验证码无效或已过期", code=400)
+    return success_response(
+        data=UserOut.model_validate(user).model_dump(), message="邮箱验证成功"
     )
 
 
@@ -40,6 +56,10 @@ async def login(body: LoginIn, db=Depends(get_db)):
     if user is None or not verify_password(body.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误"
+        )
+    if settings.auth.require_email_verification and not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="邮箱未验证，请先完成邮箱验证"
         )
     token = create_access_token(subject=str(user.id), extra={"username": user.username})
     return TokenOut(access_token=token)

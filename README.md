@@ -35,7 +35,7 @@ fastapi-ai-scaffold/
 ├── migrations/             # Alembic env + 0001(users)/0002(updated_at)/0003(email verification)
 ├── tests/                  # conftest + health/auth/users（pytest，sqlite）
 ├── scripts/                # scaffold.py（生成新项目）
-├── requirements.txt        # 核心依赖（~15 包）
+├── requirements.txt        # 核心依赖（13 包）
 ├── requirements-extras.txt # 可选栈：pymilvus / neo4j / minio / langchain / openai
 ├── requirements-dev.txt    # pytest / ruff / alembic
 ├── pyproject.toml          # ruff + pytest（pythonpath）配置
